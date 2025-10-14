@@ -1,6 +1,6 @@
 ﻿{
   "name": "Sandwichería El 10",
-  "short_name": "Sandwichería El 10",
+  "short_name": "El 10",
   "description": "El menú digital de la Sandwichería El 10.",
   "start_url": "./index.html",
   "display": "standalone",
@@ -26,3 +26,4 @@
   ]
 
 }
+
