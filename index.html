@@ -3,14 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<meta name="description" content="Explorá el menú digital de Sandwicheria El 10. Encontrá los mejores sándwiches, pizzas y promos en Salta. ¡Hacé tu pedido online y envialo por WhatsApp en segundos!">
+	<meta name="description" content="Explorá el menú digital de Sandwichería El 10. Encontrá los mejores sándwiches, pizzas y promos en Salta. ¡Hacé tu pedido online y envialo por WhatsApp en segundos!">
     <title>Sandwichería El 10</title>
     <link rel="icon" href="Iconos/Icono.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="white">
-    <meta name="apple-mobile-web-app-title" content="El 10">
+    <meta name="apple-mobile-web-app-title" content="Sandwichería El 10">
+	<link rel="apple-touch-icon" href="Iconos/Icono-192.png">
+
+	<meta name="apple-mobile-web-app-status-bar-style" content="#75aadb">
+	<link rel="apple-touch-startup-image" href="Iconos/Icono-512.png"> 
+
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         :root {
             --primary: #75aadb;
@@ -722,7 +728,7 @@
 </head>
 
 <body>
-<button id="instalar" style="display: none;">Instalar App</button>
+
     <div id="login-modal-overlay" class="modal-overlay">
         <div class="modal-content">
             <button id="close-login-modal" class="modal-close">&times;</button>
@@ -844,7 +850,7 @@
     <section class="banner">
         <div class="banner-title">
             <img src="Iconos/Icono.png" alt="Logo de El 10">
-            <span class="banner-slogan">Mucho más que una sandwicheria</span>
+            <span class="banner-slogan">Mucho más que una sandwichería</span>
         </div>
         <img src="Fondo.png" alt="Fondo de cancha de fútbol">
     </section>
@@ -1988,64 +1994,16 @@ function animateButtonStep(btn, text, color, duration, resetText = null, resetCo
         });
     </script>
 	<script>
-// ----------------------------------------------------
 // 🔄 Animación visual al hacer clic en botones administrativos
 document.querySelectorAll('.btn-save, #limpiar-aviso').forEach(btn => {
   btn.addEventListener('click', e => {
-    btn.classList.remove('animate', 'clicked');
-    void btn.offsetWidth;
+    btn.classList.remove('animate', 'clicked'); 
+    void btn.offsetWidth; 
     btn.classList.add('animate', 'clicked');
   });
 });
-
-// ----------------------------------------------------
-// ⚙️ Lógica de Instalación PWA (Service Worker y beforeinstallprompt)
-let deferredPrompt;
-
-// 1. REGISTRO DEL SERVICE WORKER
-document.addEventListener('DOMContentLoaded', function () {
-    // Asegúrate de que el archivo 'serviceworker.js' exista en la misma carpeta que el index.html
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('serviceworker.js')
-            .then(function (reg) {
-                console.log('Service Worker registrado con éxito. Scope: ', reg.scope);
-            })
-            .catch(function (error) {
-                console.error('Error al registrar el Service Worker:', error);
-            });
-    }
-}, false);
-
-// 2. CAPTURA DEL EVENTO DE INSTALACIÓN
-window.addEventListener('beforeinstallprompt', (e) => {    
-    e.preventDefault(); // Detiene el prompt automático del navegador
-    deferredPrompt = e; // Almacena el evento para usarlo al hacer clic
-
-    // Muestra tu botón de instalación (Asume que usas jQuery)
-    if (typeof $ !== 'undefined') {
-        $("#instalar").show(); 
-    }
-});
-
-// 3. MANEJO DEL CLIC EN EL BOTÓN DE INSTALACIÓN
-if (typeof $ !== 'undefined') {
-    $("#instalar").on('click', (e) => {
-        if (deferredPrompt) {
-            deferredPrompt.prompt(); // Muestra la ventana nativa de instalación
-
-            deferredPrompt.userChoice
-                .then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        $("#instalar").hide(); // Oculta el botón si el usuario acepta
-                    }
-                    deferredPrompt = null;
-                });
-        }
-    });
-}
-// ----------------------------------------------------
 </script>
-
 </body>
 
 </html>
+
