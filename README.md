@@ -1,8 +1,8 @@
-# 🍔 Sandwichería El 10 - Catálogo Digital con Panel de Administración
+# 🍔 Sandwichería El 10 - Catálogo Digital con Panel de Administración Online
 
 ![Sandwichería El 10](Demo.png)
 
-Este proyecto es un catálogo digital interactivo para la "Sandwichería El 10", desarrollado con **HTML, CSS y JavaScript puros (Vanilla JS)**, utilizando **Firebase** como backend para la gestión de productos, avisos y autenticación de administradores en tiempo real.
+Este proyecto es un catálogo digital interactivo para la "Sandwichería El 10", desarrollado con **HTML, CSS y JavaScript, utilizando **Firebase** como backend para la gestión de productos, avisos y autenticación en tiempo real.
 
 **➡️ Ver demo en vivo:** [Sandwichería El 10](https://sandwicheriael10.vercel.app/)
 
@@ -43,7 +43,7 @@ Más que un simple ejercicio, este catálogo fue construido pensando en las nece
     * **CRUD de Productos:** Crear, leer, actualizar y eliminar productos desde el panel de admin.
     * **Gestor de Avisos:** Publicar y limpiar avisos promocionales que aparecen como pop-ups en la página.
 * **Paginación:** Organiza el menú en varias páginas para una navegación más limpia cuando hay muchos productos.
-* **Instalable como PWA (Progressive Web App):** Gracias al archivo `manifest.json`, la web puede ser instalada en el escritorio o en la pantalla de inicio de un móvil para un acceso directo y funcionamiento sin conexión (offline-first).
+* **Instalable como PWA (Progressive Web App):** Gracias al archivo `manifest.json`, la web puede ser instalada en el escritorio o en la pantalla de inicio de un móvil para un acceso directo.
 
 ---
 
