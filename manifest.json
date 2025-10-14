@@ -10,12 +10,14 @@
     {
       "src": "Iconos/Icono-192.png",
       "sizes": "192x192",
-      "type": "any"
+      "type": "image/png",
+      "purpose": "any"  // Para que el navegador sepa cómo usarlo
     },
     {
       "src": "Iconos/Icono-512.png",
       "sizes": "512x512",
-      "type": "any"
+      "type": "image/png",
+      "purpose": "any"  // ¡Clave para la Splash Screen en Android!
     },
     {
       "src": "Iconos/Icono-144.png",
@@ -26,5 +28,6 @@
   ]
 
 }
+
 
 
