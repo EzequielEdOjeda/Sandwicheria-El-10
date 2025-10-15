@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<meta name="description" content="Explorá el menú digital de Sandwichería El 10. Encontrá los mejores sándwiches, pizzas y promos en Salta. ¡Hacé tu pedido online y envialo por WhatsApp en segundos!">
+	<meta name="description" content="Explorá el catálogo digital de la Sandwichería El 10. Encontrá los mejores sándwiches, pizzas y promos en Salta. ¡Hacé tu pedido online y envialo por WhatsApp en segundos!">
     <title>Sandwichería El 10</title>
     <link rel="icon" href="Iconos/Icono.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -35,6 +35,10 @@
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><g fill="%23d4e6f1" fill-opacity="0.4"><rect x="50" width="50" height="50" /><rect y="50" width="50" height="50" /></g></svg>');
             color: var(--text);
             padding-top: 60px;
+        }
+		
+		.no-scroll {
+            overflow: hidden;
         }
 
         /* Header */
@@ -507,7 +511,7 @@
         
         /* Avisos */
         .aviso-popup {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
+            position: fixed; top: 53%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
             background: var(--card); color: var(--text); border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
             width: 90%; max-width: 350px; opacity: 0;
@@ -1447,7 +1451,7 @@
                 </div>
             `;
             document.body.appendChild(modal);
-            document.body.style.overflow = 'hidden';
+             document.body.classList.add('no-scroll');
             setTimeout(() => modal.classList.add("show"), 10);
             
             const paymentMethodSelect = modal.querySelector("#paymentMethod");
@@ -1474,7 +1478,7 @@
             const modal = document.querySelector(".modal-overlay:not(#admin-panel-overlay):not(#login-modal-overlay)");
             if (modal) {
                 modal.classList.remove("show");
-                document.body.style.overflow = '';
+                document.body.classList.remove('no-scroll');
                 setTimeout(() => modal.remove(), 300);
             }
         }
@@ -1559,9 +1563,13 @@
     const loginModal = document.getElementById('login-modal-overlay');
     const adminPanel = document.getElementById('admin-panel-overlay');
     
-    function showModal(modal) { modal.classList.add('show'); }
+    function showModal(modal) { 
+        modal.classList.add('show');
+        document.body.classList.add('no-scroll'); // <-- LÍNEA AGREGADA
+    }
     function hideModal(modal) { 
-        modal.classList.remove('show'); 
+        modal.classList.remove('show');
+        document.body.classList.remove('no-scroll'); // <-- LÍNEA AGREGADA
         if(modal.id === 'login-modal-overlay') {
             resetLoginForm();
         }
@@ -1999,9 +2007,6 @@ document.querySelectorAll('.btn-save, #limpiar-aviso').forEach(btn => {
   });
 });
 </script>
+	
 </body>
-
 </html>
-
-
-
