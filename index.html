@@ -1390,8 +1390,8 @@
             updateCartCount();
         }
 
-        window.increaseQty = (index) => { if(cart[index]) { cart[index].qty++; renderCart(); } }
-        window.decreaseQty = (index) => { if(cart[index]) { cart[index].qty > 1 ? cart[index].qty-- : cart.splice(index, 1); renderCart(); } }
+        window.increaseQty = (index) => { if(cart[index]) { cart[index].qty++; renderCart(); renderProducts();} }
+        window.decreaseQty = (index) => { if(cart[index]) { cart[index].qty > 1 ? cart[index].qty-- : cart.splice(index, 1); renderCart(); renderProducts();} }
         window.removeCart = (index) => { if(cart[index]) { cart.splice(index, 1); renderCart();} renderProducts();}
 
         function showNotification(message, isError = false) {
@@ -2010,4 +2010,5 @@ document.querySelectorAll('.btn-save, #limpiar-aviso').forEach(btn => {
 	
 </body>
 </html>
+
 
