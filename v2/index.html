@@ -2113,9 +2113,40 @@
             <h1 class="intro-logoo">SANDWICHERÍA EL 10</h1>
             <p style="margin-bottom: 40px; opacity: 0.9;">Los sabores de Salta en tu casa</p>
             
-            <button class="intro-btn" id="enter-site-btn">
-                INGRESAR AL SITIO
-            </button>
+            <!-- En el INTRO SPLASH OVERLAY, justo antes del botón -->
+<script>
+    // Función de fallback para el botón de ingreso
+    window.enterSiteFallback = function() {
+        const overlay = document.getElementById('intro-overlay');
+        if (overlay) {
+            // Ocultar el splash inmediatamente
+            overlay.style.opacity = '0';
+            overlay.style.pointerEvents = 'none';
+            overlay.style.transition = 'opacity 0.5s ease';
+            
+            // Habilitar scroll
+            document.body.style.overflow = 'auto';
+            document.body.classList.add('can-scroll');
+            
+            // Ocultar completamente después de la animación
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 500);
+            
+            // Intentar reproducir sonido
+            const audio = document.getElementById('welcome-sound');
+            if (audio) {
+                audio.volume = 0.3;
+                audio.play().catch(e => console.log("Audio no disponible aún"));
+            }
+        }
+    };
+</script>
+
+<!-- Luego modifica el botón para usar ambas funciones -->
+<button class="intro-btn" id="enter-site-btn" onclick="enterSiteFallback()">
+    INGRESAR AL SITIO
+</button>
             <div class="intro-hint">
             <i class="fas fa-chevron-up"></i> Toca para comenzar
         </div>
@@ -2638,7 +2669,43 @@ window.onload = () => {
         }
     }
 };
-        // --- EVENT LISTENERS SETUP ---
+   // En el módulo principal, modifica la función enterSite
+window.enterSite = function() {
+    const overlay = $('intro-overlay');
+    const audio = $('welcome-sound');
+    
+    // Si ya se usó el fallback, solo asegurar que esté oculto
+    if (overlay.style.display === 'none' || overlay.style.opacity === '0') {
+        document.body.style.overflow = 'auto';
+        document.body.classList.add('can-scroll');
+        return;
+    }
+    
+    // Reproducir sonido si está permitido
+    audio.volume = 0.3;
+    audio.play().catch(e => console.log("Audio autoplay prevented"));
+    
+    // Agregar efecto de desenfoque y salida
+    overlay.style.backdropFilter = 'blur(10px)';
+    overlay.style.webkitBackdropFilter = 'blur(10px)';
+    overlay.classList.add('hidden-fade');
+    
+    // Habilitar scroll después de la animación
+    setTimeout(() => {
+        document.body.style.overflow = 'auto';
+        document.body.classList.add('can-scroll');
+    }, 800);
+    
+    // Ocultar completamente después de la animación
+    setTimeout(() => {
+        overlay.style.display = 'none';
+        // Cargar anuncios después del intro
+        if (typeof loadAnnouncements === 'function') {
+            loadAnnouncements();
+        }
+    }, 1200);
+};
+   // --- EVENT LISTENERS SETUP ---
         function setupEventListeners() {
             // Intro
             $('enter-site-btn').onclick = enterSite;
