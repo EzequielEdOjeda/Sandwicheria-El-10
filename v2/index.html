@@ -61,8 +61,8 @@
         h1, h2, h3, h4 { 
             font-family: 'Poppins', sans-serif; 
             font-weight: 700;
+			padding: 20px;
         }
-        
         a { 
             text-decoration: none; 
             color: inherit; 
@@ -1249,7 +1249,6 @@
         }
         
         .modal-head { 
-            padding: 20px; 
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             border-bottom: 1px solid rgba(0,0,0,0.1); 
             display: flex; 
@@ -1279,7 +1278,7 @@
             font-size: 24px;
             color: inherit;
             cursor: pointer;
-            width: 15px;
+            width: 50px;
             height: 30px;
             display: flex;
             align-items: center;
@@ -1637,7 +1636,6 @@
         }
         
         .announcement-header {
-            padding: 25px;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             text-align: center;
             color: var(--secondary);
@@ -1944,12 +1942,7 @@
             .modal-card {
                 max-height: 80vh;
             }
-            
-            .cart-header,
-            .modal-head {
-                padding: 15px;
-            }
-            
+                      
             .modal-body-scroll {
                 padding: 15px;
             }
@@ -2278,7 +2271,7 @@
         </div>
         <div id="menu" class="products-grid">
             <div style="grid-column:1/-1; padding:40px; text-align:center; color:#999;">
-                <i class="fas fa-spinner fa-spin fa-2x"></i><br>Cargando menú...
+                <i class="fas fa-spinner fa-spin fa-2x"></i><br>Cargando el menú...
             </div>
         </div>
         <div id="pagination" class="pagination"></div>
@@ -2341,7 +2334,8 @@
             <div class="modal-body-scroll">
                 <div class="product-detail-grid">
                     <div class="product-detail-img">
-                        <img id="modalProdImg" src="" alt="Producto">
+                         <img id="modalProdImg" src="not-image.jpg" alt="Producto" 
+             onerror="this.src='not-image.jpg'; this.onerror=null;">
                     </div>
                     <div class="product-detail-info">
                         <h2 id="modalProdTitle" class="product-detail-title"></h2>
@@ -2469,7 +2463,7 @@
                                 <input type="hidden" id="product-id">
                                 
                                 <label>Nombre del Producto</label>
-                                <input type="text" id="product-name" class="custom-input" placeholder="Ej: Pizza Mozzarella" required>
+                                <input type="text" id="product-name" class="custom-input" placeholder="Ej: Pizza Mozzarella" autocomplete="off" required >
                                 
                                 <label>Descripción</label>
                                 <textarea id="product-desc" class="custom-textarea" placeholder="Ingredientes, detalles..."></textarea>
@@ -2478,12 +2472,12 @@
                                 <input type="number" id="product-price" class="custom-input" placeholder="Ej: 2500" step="0.01" required>
                                 
                                 <label>URL de Imagen</label>
-                                <input type="text" id="product-img" class="custom-input" placeholder="https://ejemplo.com/imagen.jpg">
+                                <input type="text" id="product-img" class="custom-input" placeholder="https://ejemplo.com/imagen.jpg" autocomplete="off">
                                 
                                 <label>Categoría</label>
                                 <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                                     <select id="product-category" class="custom-select" style="flex: 1;"></select>
-                                    <input type="text" id="new-category" class="custom-input" placeholder="Nueva categoría" style="flex: 1;">
+                                    <input type="text" id="new-category" class="custom-input" placeholder="Nueva categoría" style="flex: 1;" autocomplete="off">
                                 </div>
                                 
                                  <!-- BOTÓN CENTRADO -->
@@ -2516,13 +2510,13 @@
         <div class="modal-body-scroll">
             <p style="font-size: 16px; margin-bottom: 25px;">¿Estás seguro de que deseas eliminar este producto?</p>
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <button onclick="confirmDeleteProduct()" class="btn-checkout" style="background: var(--danger); justify-content: center; gap: 8px; flex: 1;">
-                    <i class="fas fa-trash"></i> Eliminar
-                </button>
-                <button onclick="closeModal('confirmDeleteModal')" class="btn-checkout" style="background: var(--text-grey); justify-content: center; gap: 8px; flex: 1;">
-                    <i class="fas fa-times"></i> Cancelar
-                </button>
-            </div>
+    <button id="confirmDeleteButton" onclick="confirmDeleteProduct()" class="btn-checkout" style="background: var(--danger); justify-content: center; gap: 8px; flex: 1;">
+        <i class="fas fa-trash"></i> Eliminar
+    </button>
+    <button onclick="closeModal('confirmDeleteModal')" class="btn-checkout" style="background: var(--text-grey); justify-content: center; gap: 8px; flex: 1;">
+        <i class="fas fa-times"></i> Cancelar
+    </button>
+</div>
         </div>
     </div>
 </div>
@@ -3050,7 +3044,8 @@ function enterSite() {
         
         html += `
             <div class="cart-item">
-                <img src="${item.img}" alt="${item.name}"  onerror="this.src='not-image.jpg';">
+                <img src="${item.img}" alt="${item.name}" 
+             onerror="this.src='not-image.jpg'; this.onerror=null;">
                 <div class="cart-item-details">
                     <div class="cart-item-title">${item.name}</div>
                     <div style="font-weight:700;">$${itemTotal.toLocaleString('es-AR')}</div>
@@ -3269,46 +3264,52 @@ window.removeCartItem = function(index) {
         };
 
         // --- PRODUCT DETAIL ---
-        window.openProductDetail = function(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-            
-            const modal = $('productModalOverlay');
-            const img = $('modalProdImg');
-            const title = $('modalProdTitle');
-            const desc = $('modalProdDesc');
-            const price = $('modalProdPrice');
-            const button = $('modalProdAddBtn');
-            
-            img.src = product.img;
-            img.alt = product.name;
-            title.textContent = product.name;
-            desc.textContent = product.desc;
-            price.textContent = `$${product.price.toLocaleString('es-AR')}`;
-            
-            button.setAttribute('data-product-id', product.id);
-            button.onclick = () => {
-                addToCart(product.id, button);
-                setTimeout(() => closeModal('productModalOverlay'), 1000);
-            };
-            
-            // Update button state
-            const isInCart = cart.some(item => item.id === product.id);
-            const isAdding = buttonTimeouts[product.id];
-            
-            button.className = 'btn-detail-add';
-            if (isAdding) {
-                button.classList.add('loading');
-                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Agregando...';
-            } else if (isInCart) {
-                button.classList.add('added');
-                button.innerHTML = '<i class="fas fa-check"></i> AGREGADO';
-            } else {
-                button.innerHTML = '<i class="fas fa-shopping-cart"></i> AGREGAR AL PEDIDO';
-            }
-            
-            modal.classList.add('show');
-        };
+window.openProductDetail = function(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    
+    const modal = $('productModalOverlay');
+    const img = $('modalProdImg');
+    const title = $('modalProdTitle');
+    const desc = $('modalProdDesc');
+    const price = $('modalProdPrice');
+    const button = $('modalProdAddBtn');
+    
+    // Configurar imagen con fallback
+    img.src = product.img;
+    img.alt = product.name;
+    img.onerror = function() {
+        this.src = 'not-image.jpg';
+        this.onerror = null; // Evitar bucles infinitos
+    };
+    
+    title.textContent = product.name;
+    desc.textContent = product.desc;
+    price.textContent = `$${product.price.toLocaleString('es-AR')}`;
+    
+    button.setAttribute('data-product-id', product.id);
+    button.onclick = () => {
+        addToCart(product.id, button);
+        setTimeout(() => closeModal('productModalOverlay'), 1000);
+    };
+    
+    // Update button state
+    const isInCart = cart.some(item => item.id === product.id);
+    const isAdding = buttonTimeouts[product.id];
+    
+    button.className = 'btn-detail-add';
+    if (isAdding) {
+        button.classList.add('loading');
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Agregando...';
+    } else if (isInCart) {
+        button.classList.add('added');
+        button.innerHTML = '<i class="fas fa-check"></i> AGREGADO';
+    } else {
+        button.innerHTML = '<i class="fas fa-shopping-cart"></i> AGREGAR AL PEDIDO';
+    }
+    
+    modal.classList.add('show');
+};
 
         // --- CHECKOUT ---
         window.openCheckoutModal = function() {
@@ -3461,48 +3462,59 @@ window.removeCartItem = function(index) {
         };
         
         async function handleLoginSubmit(e) {
-            e.preventDefault();
+    e.preventDefault();
+    e.stopPropagation(); // ¡IMPORTANTE!
+    
+    const email = $('admin-email').value.trim();
+    const password = $('admin-password').value.trim();
+    const button = e.target.querySelector('button[type="submit"]');
+    
+    if (!email || !password) {
+        showToast('Completa todos los campos', 'warning');
+        return;
+    }
+    
+    // Mostrar estado INMEDIATAMENTE
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+    button.disabled = true;
+    
+    // Pequeño delay para feedback visual
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        adminUser = userCredential.user;
+        
+        const roleRef = ref(db, `Roles/${adminUser.uid}`);
+        const snapshot = await get(roleRef);
+        
+        if (snapshot.exists() && snapshot.val() === 'admin') {
+            closeModal('loginModalOverlay');
+            $('adminPanelOverlay').classList.add('show');
+            loadAdminData();
             
-            const email = $('admin-email').value.trim();
-            const password = $('admin-password').value.trim();
-            const button = e.target.querySelector('button[type="submit"]');
-            
-            if (!email || !password) {
-                showToast('Completa todos los campos', 'warning');
-                return;
-            }
-            
-            // Show loading
-            const originalText = button.innerHTML;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
-            button.disabled = true;
-            
-            try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                adminUser = userCredential.user;
-                
-                // Check if user is admin
-                const roleRef = ref(db, `Roles/${adminUser.uid}`);
-                const snapshot = await get(roleRef);
-                
-                if (snapshot.exists() && snapshot.val() === 'admin') {
-                    closeModal('loginModalOverlay');
-                    $('adminPanelOverlay').classList.add('show');
-                    loadAdminData();
-                    showToast('Acceso concedido', 'success');
-                } else {
-                    await signOut(auth);
-                    throw new Error('No admin privileges');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                showToast('Credenciales incorrectas', 'error');
-            } finally {
+            setTimeout(() => {
+                showToast('Acceso concedido', 'success');
                 button.innerHTML = originalText;
                 button.disabled = false;
-                $('login-form').reset();
-            }
+            }, 1000);
+            
+        } else {
+            await signOut(auth);
+            throw new Error('No admin privileges');
         }
+    } catch (error) {
+        console.error('Login error:', error);
+        showToast('Credenciales incorrectas', 'error');
+        
+        // Restaurar inmediatamente
+        button.innerHTML = originalText;
+        button.disabled = false;
+    }
+    
+    return false;
+}
        
         // --- ADMIN FUNCTIONS ---
         function switchAdminTab(tabName) {
@@ -3553,45 +3565,47 @@ window.removeCartItem = function(index) {
         }
         
         function renderAdminProducts(filter = '') {
-            const container = $('admin-products-list');
-            const filteredProducts = filter ? 
-                products.filter(p => p.name.toLowerCase().includes(filter.toLowerCase())) : 
-                products;
-            
-            if (filteredProducts.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color:#888; padding:20px;">No hay productos</p>';
-                return;
-            }
-            
-            container.innerHTML = filteredProducts.map(product => `
-                <div class="admin-product-item">
-                    <img src="${product.img}" alt="${product.name}">
-                    <div style="flex:1;">
-                        <div style="font-weight:600;">${product.name}</div>
-                        <div style="font-size:12px; color:#666;">${product.cat} • $${product.price}</div>
-                    </div>
-                    <div class="admin-product-actions">
-                        <button class="btn-edit" onclick="editProduct('${product.id}')">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn-delete" onclick="deleteProduct('${product.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
+    const container = $('admin-products-list');
+    const filteredProducts = filter ? 
+        products.filter(p => p.name.toLowerCase().includes(filter.toLowerCase())) : 
+        products;
+    
+    if (filteredProducts.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#888; padding:20px;">No hay productos</p>';
+        return;
+    }
+    
+    container.innerHTML = filteredProducts.map(product => `
+        <div class="admin-product-item">
+            <img src="${product.img}" alt="${product.name}" 
+                 onerror="this.src='not-image.jpg'; this.onerror=null;">
+            <div style="flex:1;">
+                <div style="font-weight:600;">${product.name}</div>
+                <div style="font-size:12px; color:#666;">${product.cat} • $${product.price}</div>
+            </div>
+            <div class="admin-product-actions">
+                <button class="btn-edit" onclick="editProduct('${product.id}')">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-delete" onclick="deleteProduct('${product.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
         
         function updateAdminCategorySelect() {
             const select = $('product-category');
             const categories = [...new Set(products.map(p => p.cat).filter(cat => cat && cat !== 'Todas'))];
             
-            select.innerHTML = '<option value="">Seleccionar categoría</option>' +
+            select.innerHTML = '<option value="">Seleccionar</option>' +
                 categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
         }
         
 async function handleAvisoSubmit(e) {
     e.preventDefault();
+    e.stopPropagation(); // Evitar múltiples envíos
     
     const title = $('aviso-titulo').value.trim();
     let message = $('aviso-mensaje').value.trim();
@@ -3606,53 +3620,84 @@ async function handleAvisoSubmit(e) {
         message += ` img:${image}`;
     }
     
-    // Obtener botón y guardar estado original
+    // Obtener botón y cambiar estado INMEDIATAMENTE
     const button = e.target.querySelector('button[type="submit"]');
     const originalText = button.innerHTML;
-    const originalDisabled = button.disabled;
     
-    // Mostrar estado de carga
+    // Mostrar estado de carga INMEDIATAMENTE
     button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
     button.disabled = true;
     
+    // Simular un pequeño delay para feedback visual (opcional)
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
     try {
         await set(ref(db, 'Avisos'), { [title]: message });
-        showToast('Aviso guardado', 'success');
+        
+        // Mostrar toast después de guardar
+        setTimeout(() => {
+            showToast('Aviso guardado correctamente', 'success');
+            
+            // Restaurar botón después de 2 segundos
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 2000);
+            
+        }, 500); // Pequeño delay para feedback
+        
     } catch (error) {
         console.error('Error saving announcement:', error);
         showToast('Error al guardar aviso', 'error');
-    } finally {
-        // Restaurar botón
-        button.innerHTML = originalText;
-        button.disabled = originalDisabled;
-    }
-}
         
-      async function handleClearAviso() {
+        // Restaurar botón inmediatamente en error
+        button.innerHTML = originalText;
+        button.disabled = false;
+    }
+    
+    return false;
+}
+
+async function handleClearAviso() {
     const button = $('limpiar-aviso');
     const originalText = button.innerHTML;
-    const originalDisabled = button.disabled;
     
-    // Mostrar estado de carga
+    // Mostrar estado INMEDIATAMENTE
     button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Borrando...';
     button.disabled = true;
+    
+    // Pequeño delay para feedback visual
+    await new Promise(resolve => setTimeout(resolve, 300));
     
     try {
         await set(ref(db, 'Avisos'), {});
         $('aviso-form').reset();
-        showToast('Aviso eliminado', 'success');
+        
+        // Mostrar toast con delay
+        setTimeout(() => {
+            showToast('Aviso eliminado', 'success');
+            
+            // Restaurar botón después de 2 segundos
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 2000);
+            
+        }, 500);
+        
     } catch (error) {
         console.error('Error clearing announcement:', error);
         showToast('Error al eliminar aviso', 'error');
-    } finally {
-        // Restaurar botón
+        
+        // Restaurar inmediatamente en error
         button.innerHTML = originalText;
-        button.disabled = originalDisabled;
+        button.disabled = false;
     }
 }
         
-        async function handleProductSubmit(e) {
+       async function handleProductSubmit(e) {
     e.preventDefault();
+    e.stopPropagation(); // ¡IMPORTANTE! Evita propagación múltiple
     
     const id = $('product-id').value;
     const name = $('product-name').value.trim();
@@ -3683,17 +3728,13 @@ async function handleAvisoSubmit(e) {
     };
     
     try {
-        // Obtener el botón de forma segura
-        const button = $('product-form')?.querySelector('button[type="submit"]');
-        const originalText = button?.innerHTML || '';
-        const loadingText = id ? 
-    '<i class="fas fa-spinner fa-spin"></i> Actualizando...' : 
-    '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-        // Mostrar estado de carga solo si el botón existe
-        if (button) {
-			button.innerHTML = loadingText;
-			button.disabled = true;
-		}
+        const button = $('product-form').querySelector('button[type="submit"]');
+        const originalText = button.innerHTML;
+        
+        // Deshabilitar formulario para evitar múltiples envíos
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + 
+                          (id ? 'Actualizando...' : 'Guardando...');
         
         if (id) {
             // Update existing product
@@ -3707,36 +3748,34 @@ async function handleAvisoSubmit(e) {
         }
         
         // Reset form
-        $('product-form').reset();
-        $('product-id').value = '';
-        $('product-form-title').textContent = 'Añadir Nuevo Producto';
-        
-        // Restaurar el botón a su estado original
-        if (button) {
+        setTimeout(() => {
+            $('product-form').reset();
+            $('product-id').value = '';
+            $('product-form-title').textContent = 'Añadir Nuevo Producto';
             button.innerHTML = '<i class="fas fa-plus"></i> Guardar Producto';
             button.disabled = false;
-        }
-        
-        // Update category select
-        updateAdminCategorySelect();
-        
-        // Recargar productos después de un breve delay
-        setTimeout(() => {
-            loadData();
+            
+            // Actualizar UI
+            updateAdminCategorySelect();
             renderAdminProducts();
-        }, 1000);
+            
+            // Recargar productos en vista principal
+            loadData();
+        }, 1500);
         
     } catch (error) {
         console.error('Error detallado:', error);
         showToast(`Error: ${error.message || 'No se pudo guardar el producto'}`, 'error');
         
-        // Asegurar que el botón se restaure incluso en caso de error
-        const button = $('product-form')?.querySelector('button[type="submit"]');
-        if (button) {
-            button.disabled = false;
-            button.innerHTML = id ? '<i class="fas fa-save"></i> Actualizar Producto' : '<i class="fas fa-plus"></i> Guardar Producto';
-        }
+        // Restaurar botón en caso de error
+        const button = $('product-form').querySelector('button[type="submit"]');
+        button.disabled = false;
+        button.innerHTML = id ? 
+            '<i class="fas fa-save"></i> Actualizar Producto' : 
+            '<i class="fas fa-plus"></i> Guardar Producto';
     }
+    
+    return false; // Prevenir submit adicional
 }
         
         window.editProduct = function(productId) {
@@ -3775,32 +3814,36 @@ window.deleteProduct = function(productId) {
 window.confirmDeleteProduct = async function() {
     if (!productToDelete) return;
     
-    // Obtener botones y guardar estados
-    const deleteButton = $('confirmDeleteButton');
-    const cancelButton = $('cancelDeleteButton');
-    const originalDeleteText = deleteButton.innerHTML;
-    const originalCancelText = cancelButton.innerHTML;
+    const button = $('confirmDeleteButton');
+    const originalText = button.innerHTML;
     
     // Mostrar estado de carga
-    deleteButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
-    deleteButton.disabled = true;
-    cancelButton.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
+    button.disabled = true;
     
     try {
         await remove(ref(db, `Pedidos/${productToDelete}`));
         showToast('Producto eliminado', 'success');
+        
+        // Recargar los productos en el admin
         renderAdminProducts();
+        
+        // También recargar en la vista principal
+        setTimeout(() => {
+            loadData(); // Esto recargará productos desde Firebase
+        }, 1000);
+        
     } catch (error) {
         console.error('Error deleting product:', error);
         showToast('Error al eliminar producto', 'error');
     } finally {
-        // Restaurar botones
-        deleteButton.innerHTML = originalDeleteText;
-        deleteButton.disabled = false;
-        cancelButton.innerHTML = originalCancelText;
-        cancelButton.disabled = false;
-        closeModal('confirmDeleteModal');
-        productToDelete = null;
+        // Restaurar botón
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            closeModal('confirmDeleteModal');
+            productToDelete = null;
+        }, 1000);
     }
 };
 // También actualizar la función handleLogout para que sea accesible
