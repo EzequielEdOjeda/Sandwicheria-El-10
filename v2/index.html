@@ -2944,7 +2944,7 @@ function enterSite() {
                 
                 card.innerHTML = `
                     <div class="prod-img-box" onclick="openProductDetail('${product.id}')">
-                        <img src="${product.img}" alt="${product.name}" loading="lazy">
+                        <img src="${product.img}" alt="${product.name}" loading="lazy" onerror="this.onerror=null; this.src='not-image.jpg';">
                         <div class="prod-overlay-btn" onclick="openProductDetail('${product.id}'); event.stopPropagation();">
                             <i class="fas fa-eye"></i>
                         </div>
@@ -3050,7 +3050,7 @@ function enterSite() {
         
         html += `
             <div class="cart-item">
-                <img src="${item.img}" alt="${item.name}">
+                <img src="${item.img}" alt="${item.name}"  onerror="this.src='not-image.jpg';">
                 <div class="cart-item-details">
                     <div class="cart-item-title">${item.name}</div>
                     <div style="font-weight:700;">$${itemTotal.toLocaleString('es-AR')}</div>
@@ -3590,41 +3590,66 @@ window.removeCartItem = function(index) {
                 categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
         }
         
-        async function handleAvisoSubmit(e) {
-            e.preventDefault();
-            
-            const title = $('aviso-titulo').value.trim();
-            let message = $('aviso-mensaje').value.trim();
-            const image = $('aviso-imagen').value.trim();
-            
-            if (!title || !message) {
-                showToast('Completa título y mensaje', 'warning');
-                return;
-            }
-            
-            if (image) {
-                message += ` img:${image}`;
-            }
-            
-            try {
-                await set(ref(db, 'Avisos'), { [title]: message });
-                showToast('Aviso guardado', 'success');
-            } catch (error) {
-                console.error('Error saving announcement:', error);
-                showToast('Error al guardar aviso', 'error');
-            }
-        }
+async function handleAvisoSubmit(e) {
+    e.preventDefault();
+    
+    const title = $('aviso-titulo').value.trim();
+    let message = $('aviso-mensaje').value.trim();
+    const image = $('aviso-imagen').value.trim();
+    
+    if (!title || !message) {
+        showToast('Completa título y mensaje', 'warning');
+        return;
+    }
+    
+    if (image) {
+        message += ` img:${image}`;
+    }
+    
+    // Obtener botón y guardar estado original
+    const button = e.target.querySelector('button[type="submit"]');
+    const originalText = button.innerHTML;
+    const originalDisabled = button.disabled;
+    
+    // Mostrar estado de carga
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    button.disabled = true;
+    
+    try {
+        await set(ref(db, 'Avisos'), { [title]: message });
+        showToast('Aviso guardado', 'success');
+    } catch (error) {
+        console.error('Error saving announcement:', error);
+        showToast('Error al guardar aviso', 'error');
+    } finally {
+        // Restaurar botón
+        button.innerHTML = originalText;
+        button.disabled = originalDisabled;
+    }
+}
         
-        async function handleClearAviso() {
-            try {
-                await set(ref(db, 'Avisos'), {});
-                $('aviso-form').reset();
-                showToast('Aviso eliminado', 'success');
-            } catch (error) {
-                console.error('Error clearing announcement:', error);
-                showToast('Error al eliminar aviso', 'error');
-            }
-        }
+      async function handleClearAviso() {
+    const button = $('limpiar-aviso');
+    const originalText = button.innerHTML;
+    const originalDisabled = button.disabled;
+    
+    // Mostrar estado de carga
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Borrando...';
+    button.disabled = true;
+    
+    try {
+        await set(ref(db, 'Avisos'), {});
+        $('aviso-form').reset();
+        showToast('Aviso eliminado', 'success');
+    } catch (error) {
+        console.error('Error clearing announcement:', error);
+        showToast('Error al eliminar aviso', 'error');
+    } finally {
+        // Restaurar botón
+        button.innerHTML = originalText;
+        button.disabled = originalDisabled;
+    }
+}
         
         async function handleProductSubmit(e) {
     e.preventDefault();
@@ -3658,12 +3683,17 @@ window.removeCartItem = function(index) {
     };
     
     try {
-        const button = e.target.querySelector('button[type="submit"]');
-        const originalText = button.innerHTML;
-        
-        // Mostrar estado de carga
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-        button.disabled = true;
+        // Obtener el botón de forma segura
+        const button = $('product-form')?.querySelector('button[type="submit"]');
+        const originalText = button?.innerHTML || '';
+        const loadingText = id ? 
+    '<i class="fas fa-spinner fa-spin"></i> Actualizando...' : 
+    '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        // Mostrar estado de carga solo si el botón existe
+        if (button) {
+			button.innerHTML = loadingText;
+			button.disabled = true;
+		}
         
         if (id) {
             // Update existing product
@@ -3680,7 +3710,12 @@ window.removeCartItem = function(index) {
         $('product-form').reset();
         $('product-id').value = '';
         $('product-form-title').textContent = 'Añadir Nuevo Producto';
-        $('product-form button').innerHTML = '<i class="fas fa-plus"></i> Guardar Producto';
+        
+        // Restaurar el botón a su estado original
+        if (button) {
+            button.innerHTML = '<i class="fas fa-plus"></i> Guardar Producto';
+            button.disabled = false;
+        }
         
         // Update category select
         updateAdminCategorySelect();
@@ -3694,9 +3729,9 @@ window.removeCartItem = function(index) {
     } catch (error) {
         console.error('Error detallado:', error);
         showToast(`Error: ${error.message || 'No se pudo guardar el producto'}`, 'error');
-    } finally {
-        // Restaurar botón
-        const button = e.target.querySelector('button[type="submit"]');
+        
+        // Asegurar que el botón se restaure incluso en caso de error
+        const button = $('product-form')?.querySelector('button[type="submit"]');
         if (button) {
             button.disabled = false;
             button.innerHTML = id ? '<i class="fas fa-save"></i> Actualizar Producto' : '<i class="fas fa-plus"></i> Guardar Producto';
@@ -3705,23 +3740,28 @@ window.removeCartItem = function(index) {
 }
         
         window.editProduct = function(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-            
-            $('product-id').value = product.id;
-            $('product-name').value = product.name;
-            $('product-desc').value = product.desc || '';
-            $('product-price').value = product.price;
-            $('product-img').value = product.img;
-            $('product-category').value = product.cat;
-            $('new-category').value = '';
-            
-            $('product-form-title').textContent = 'Editar Producto';
-            $('product-form button').innerHTML = '<i class="fas fa-save"></i> Actualizar Producto';
-            
-            // Switch to products tab
-            switchAdminTab('productos');
-        };
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    
+    $('product-id').value = product.id;
+    $('product-name').value = product.name;
+    $('product-desc').value = product.desc || '';
+    $('product-price').value = product.price;
+    $('product-img').value = product.img;
+    $('product-category').value = product.cat;
+    $('new-category').value = '';
+    
+    $('product-form-title').textContent = 'Editar Producto';
+    
+    // Cambiar el botón de forma segura
+    const button = $('product-form')?.querySelector('button[type="submit"]');
+    if (button) {
+        button.innerHTML = '<i class="fas fa-save"></i> Actualizar Producto';
+    }
+    
+    // Switch to products tab
+    switchAdminTab('productos');
+};
         // Variables globales
 let productToDelete = null;
 
@@ -3735,6 +3775,17 @@ window.deleteProduct = function(productId) {
 window.confirmDeleteProduct = async function() {
     if (!productToDelete) return;
     
+    // Obtener botones y guardar estados
+    const deleteButton = $('confirmDeleteButton');
+    const cancelButton = $('cancelDeleteButton');
+    const originalDeleteText = deleteButton.innerHTML;
+    const originalCancelText = cancelButton.innerHTML;
+    
+    // Mostrar estado de carga
+    deleteButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
+    deleteButton.disabled = true;
+    cancelButton.disabled = true;
+    
     try {
         await remove(ref(db, `Pedidos/${productToDelete}`));
         showToast('Producto eliminado', 'success');
@@ -3743,11 +3794,15 @@ window.confirmDeleteProduct = async function() {
         console.error('Error deleting product:', error);
         showToast('Error al eliminar producto', 'error');
     } finally {
+        // Restaurar botones
+        deleteButton.innerHTML = originalDeleteText;
+        deleteButton.disabled = false;
+        cancelButton.innerHTML = originalCancelText;
+        cancelButton.disabled = false;
         closeModal('confirmDeleteModal');
         productToDelete = null;
     }
 };
-
 // También actualizar la función handleLogout para que sea accesible
 window.handleLogout = async function() {
     try {
