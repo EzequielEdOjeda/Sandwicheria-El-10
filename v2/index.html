@@ -741,7 +741,7 @@
             padding: 15px 0; 
             overflow-x: auto; 
             position: sticky; 
-            top: 70px; 
+            top: 75px; 
             z-index: 900; 
             box-shadow: 0 5px 10px rgba(0,0,0,0.02);
             -webkit-overflow-scrolling: touch;
@@ -754,6 +754,7 @@
         .cat-container { 
             display: flex; 
             padding: 0 15px; 
+			justify-content: center;
             gap: 10px; 
             min-width: min-content;
         }
@@ -785,7 +786,7 @@
             position: relative;
             height: 400px;
             overflow: hidden;
-            margin-bottom: 10px;
+            margin-bottom: 30px;
         }
         
         @media(max-width: 767px) {
@@ -2255,7 +2256,7 @@
 
     <!-- HERO BANNER -->
     <div class="hero-banner">
-        <img src="https://images.unsplash.com/photo-1561758033-d89a9ad46330?q=80&w=2070&auto=format&fit=crop" alt="Banner El 10" onerror="this.src='Fondo.png'">
+        <img src="sponsor.png" alt="Banner El 10" onerror="this.src='Fondo.png'">
         <div class="hero-content">
             <h1 class="hero-title">SABOR ÚNICO</h1>
             <p class="hero-subtitle">Los mejores sándwiches y pizzas de Salta</p>
@@ -2640,7 +2641,7 @@
         let deliveryMode = 'delivery';
         let currentCat = 'Todas';
         let currentPage = 1;
-        let itemsPerPage = 9;
+        let itemsPerPage = 8;
         let buttonTimeouts = {};
         let adminUser = null;
 
@@ -2648,6 +2649,7 @@
 window.onload = () => {
     loadData();
     setupEventListeners();
+	handleResize(); 
     
     // Limpiar localStorage del carrito (opcional, descomenta si quieres)
     // localStorage.removeItem('el10_cart');
@@ -2790,7 +2792,7 @@ function enterSite() {
                     name: v.name || 'Sin nombre',
                     price: parseFloat(v.price) || 0,
                     desc: v.desc || 'Sin descripción',
-                    img: v.img || 'https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg',
+                    img: v.img || 'not-image.jpg',
                     cat: c
                 });
                 cats.add(c);
@@ -2810,7 +2812,7 @@ function enterSite() {
         renderProducts();
         updateAdminCategorySelect();
     });
-    
+    handleResize();
     // Load announcements
     loadAnnouncements();
 }
@@ -3625,56 +3627,82 @@ window.removeCartItem = function(index) {
         }
         
         async function handleProductSubmit(e) {
-            e.preventDefault();
-            
-            const id = $('product-id').value;
-            const name = $('product-name').value.trim();
-            const desc = $('product-desc').value.trim();
-            const price = parseFloat($('product-price').value);
-            const img = $('product-img').value.trim();
-            const newCategory = $('new-category').value.trim();
-            const selectedCategory = $('product-category').value;
-            const category = newCategory || selectedCategory;
-            
-            if (!name || !price || !category) {
-                showToast('Completa nombre, precio y categoría', 'warning');
-                return;
-            }
-            
-            const productData = {
-                name,
-                desc,
-                price,
-                img: img || 'https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg',
-                categories: category
-            };
-            
-            try {
-                if (id) {
-                    // Update existing product
-                    await update(ref(db, `Pedidos/${id}`), productData);
-                    showToast('Producto actualizado', 'success');
-                } else {
-                    // Add new product
-                    const newId = Date.now().toString();
-                    await set(ref(db, `Pedidos/${newId}`), productData);
-                    showToast('Producto agregado', 'success');
-                }
-                
-                // Reset form
-                $('product-form').reset();
-                $('product-id').value = '';
-                $('product-form-title').textContent = 'Añadir Nuevo Producto';
-                $('product-form button').innerHTML = '<i class="fas fa-plus"></i> Guardar Producto';
-                
-                // Update category select
-                updateAdminCategorySelect();
-                
-            } catch (error) {
-                console.error('Error saving product:', error);
-                showToast('Error al guardar producto', 'error');
-            }
+    e.preventDefault();
+    
+    const id = $('product-id').value;
+    const name = $('product-name').value.trim();
+    const desc = $('product-desc').value.trim();
+    const price = parseFloat($('product-price').value);
+    const img = $('product-img').value.trim();
+    const newCategory = $('new-category').value.trim();
+    const selectedCategory = $('product-category').value;
+    const category = newCategory || selectedCategory;
+    
+    if (!name || !price || !category) {
+        showToast('Completa nombre, precio y categoría', 'warning');
+        return;
+    }
+    
+    // Validar precio
+    if (isNaN(price) || price <= 0) {
+        showToast('El precio debe ser un número válido', 'warning');
+        return;
+    }
+    
+    const productData = {
+        name,
+        desc,
+        price,
+        img: img || 'not-image.jpg',
+        categories: category
+    };
+    
+    try {
+        const button = e.target.querySelector('button[type="submit"]');
+        const originalText = button.innerHTML;
+        
+        // Mostrar estado de carga
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        button.disabled = true;
+        
+        if (id) {
+            // Update existing product
+            await update(ref(db, `Pedidos/${id}`), productData);
+            showToast('Producto actualizado correctamente', 'success');
+        } else {
+            // Add new product con ID único
+            const newId = `prod_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            await set(ref(db, `Pedidos/${newId}`), productData);
+            showToast('Producto agregado correctamente', 'success');
         }
+        
+        // Reset form
+        $('product-form').reset();
+        $('product-id').value = '';
+        $('product-form-title').textContent = 'Añadir Nuevo Producto';
+        $('product-form button').innerHTML = '<i class="fas fa-plus"></i> Guardar Producto';
+        
+        // Update category select
+        updateAdminCategorySelect();
+        
+        // Recargar productos después de un breve delay
+        setTimeout(() => {
+            loadData();
+            renderAdminProducts();
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Error detallado:', error);
+        showToast(`Error: ${error.message || 'No se pudo guardar el producto'}`, 'error');
+    } finally {
+        // Restaurar botón
+        const button = e.target.querySelector('button[type="submit"]');
+        if (button) {
+            button.disabled = false;
+            button.innerHTML = id ? '<i class="fas fa-save"></i> Actualizar Producto' : '<i class="fas fa-plus"></i> Guardar Producto';
+        }
+    }
+}
         
         window.editProduct = function(productId) {
             const product = products.find(p => p.id === productId);
@@ -3747,12 +3775,12 @@ window.handleLogout = async function() {
             if (page < 1 || page > Math.ceil(products.length / itemsPerPage)) return;
             currentPage = page;
             renderProducts();
-            window.scrollTo({ top: $('menu-section').offsetTop - 100, behavior: 'smooth' });
+            window.scrollTo({ top: $('menu-sectionn').offsetTop - 100, behavior: 'smooth' });
         };
         
         function handleResize() {
             // Update items per page based on screen size
-            itemsPerPage = window.innerWidth <= 767 ? 8 : 9;
+            itemsPerPage = window.innerWidth <= 767 ? 8 : 12;
             renderProducts();
         }
         
