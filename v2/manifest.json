@@ -1,0 +1,33 @@
+﻿{
+  "name": "Sandwichería El 10",
+  "short_name": "El 10",
+  "description": "El menú digital de la Sandwichería El 10.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#75aadb",
+  "icons": [
+    {
+      "src": "Iconos/Icono-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"  // Para que el navegador sepa cómo usarlo
+    },
+    {
+      "src": "Iconos/Icono-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"  // ¡Clave para la Splash Screen en Android!
+    },
+    {
+      "src": "Iconos/Icono-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+
+}
+
+
+
