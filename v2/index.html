@@ -651,6 +651,10 @@
         }
         
         @media(max-width: 767px) {
+			.cat-bar {
+				top: 65px !important; /* Cambiado de 75px a 65px para móviles */
+			}
+			
             .mobile-cat-search {
                 display: block;
             }
@@ -3536,7 +3540,7 @@
             }
             
             // --- CORRECCIÓN: Usamos \n para saltos de línea y variables limpias ---
-            let message = `*PEDIDO WEB - SANDWICHERÍA EL 10*\n\n`;
+            let message = `*PEDIDO - SANDWICHERÍA EL 10*\n\n`;
             message += `*👤 Cliente:* ${name}\n`;
             
             if (deliveryMode === 'delivery') {
