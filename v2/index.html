@@ -2227,9 +2227,13 @@
 		    text-decoration: underline;
 			transform: translateY(-2px);
 		}
-		#limpiar-aviso:hover {
+		#limpiar-aviso {
 			font-weight: 700;
-			background-color: #fd432e;
+			background:var(--text-grey);
+			color:white;
+		}
+		#limpiar-aviso:hover {
+			background: #fd432e;
 		}
     </style>
 </head>
@@ -2625,7 +2629,7 @@
                         <i class="fas fa-save"></i> Guardar Aviso
                     </button>
                     
-                    <button type="button" id="limpiar-aviso" style="margin-top:10px; width:100%; padding:12px; background:var(--text-grey); color:white; border-radius:8px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                    <button type="button" id="limpiar-aviso" style="margin-top:10px; width:100%; padding:12px; border-radius:8px; display: flex; justify-content: center; align-items: center; gap: 8px;">
                         <i class="fas fa-trash"></i> Borrar Aviso
                     </button>
                     </form>
