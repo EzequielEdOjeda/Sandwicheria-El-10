@@ -3668,15 +3668,26 @@
 
         // --- MODAL FUNCTIONS ---
         window.closeModal = function(modalId) {
-			$(modalId).classList.remove('show');
-            // HABILITAR SCROLL
-            toggleBodyScroll(false);
+            // 1. Ocultar el modal específico
+            $(modalId).classList.remove('show');
+            
+            // 2. Comprobar si quedan OTROS modales abiertos (ej. Admin o Checkout)
+            // Buscamos elementos con la clase .modal-wrap que tengan la clase .show
+            const openModals = document.querySelectorAll('.modal-wrap.show');
+            
+            // 3. Solo reactivar el scroll si NO quedan modales abiertos
+            if (openModals.length === 0) {
+                toggleBodyScroll(false);
+            } else {
+                // Si quedan modales, aseguramos que el scroll siga bloqueado
+                toggleBodyScroll(true);
+            }
 			
-			// Si se cierra el modal de confirmación, limpiar la variable
-			if (modalId === 'confirmDeleteModal') {
-				productToDelete = null;
-			}
-		};
+            // Lógica específica para limpiar variable de eliminación
+            if (modalId === 'confirmDeleteModal') {
+                productToDelete = null;
+            }
+        };
         function closeAllModals() {
             document.querySelectorAll('.modal-wrap.show').forEach(modal => {
                 modal.classList.remove('show');
