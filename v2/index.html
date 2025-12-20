@@ -766,11 +766,24 @@
         }
         
         .hero-banner img {
-            width: 100%;
+		    width: 100%;
             height: 100%;
             object-fit: cover;
             opacity: 0.9;
         }
+		
+		#hero-banner-img {
+		   animation: slowZoom 10s infinite alternate ease-in-out;
+        }
+		
+		@keyframes slowZoom {
+		0% {
+		transform: scale(1);
+		}
+		100% {
+		transform: scale(1.1);
+		}
+		}
 
         .hero-content {
             position: absolute;
@@ -2352,7 +2365,7 @@
 
     <!-- HERO BANNER -->
     <div class="hero-banner">
-        <img src="sponsor.png" alt="Banner El 10" onerror="this.src='Fondo.png'">
+        <img id="hero-banner-img" src="sponsor.png" alt="Banner El 10" onerror="this.src='Fondo.png'">
         <div class="hero-content">
             <h1 class="hero-title">SABOR ÚNICO</h1>
             <p class="hero-subtitle">Los mejores sándwiches y pizzas de Salta</p>
@@ -2624,9 +2637,10 @@
     <button id="confirmDeleteButton" onclick="confirmDeleteProduct()" class="btn-checkout" style="background: var(--danger); justify-content: center; gap: 8px; flex: 1;">
         <i class="fas fa-trash"></i> Eliminar
     </button>
-    <button onclick="closeModal('confirmDeleteModal')" class="btn-checkout" style="background: var(--text-grey); justify-content: center; gap: 8px; flex: 1;">
-        <i class="fas fa-times"></i> Cancelar
-    </button>
+    // En el botón Cancelar del modal de confirmación (ya existe):
+	<button onclick="closeModal('confirmDeleteModal'); productToDelete = null;" class="btn-checkout" style="background: var(--text-grey); justify-content: center; gap: 8px; flex: 1;">
+		<i class="fas fa-times"></i> Cancelar
+	</button>
 </div>
         </div>
     </div>
@@ -3563,9 +3577,13 @@
 
         // --- MODAL FUNCTIONS ---
         window.closeModal = function(modalId) {
-            $(modalId).classList.remove('show');
-        };
-        
+			$(modalId).classList.remove('show');
+			
+			// Si se cierra el modal de confirmación, limpiar la variable
+			if (modalId === 'confirmDeleteModal') {
+				productToDelete = null;
+			}
+		};
         function closeAllModals() {
             document.querySelectorAll('.modal-wrap.show').forEach(modal => {
                 modal.classList.remove('show');
@@ -3987,50 +4005,63 @@
             switchAdminTab('productos');
         };
         // Variables globales
-        let productToDelete = null;
+		let productToDelete = null;
 
-        // Reemplazar la función deleteProduct
-        window.deleteProduct = function(productId) {
-            productToDelete = productId;
-            $('confirmDeleteModal').classList.add('show');
-        };
+		// Reemplazar la función deleteProduct
+		window.deleteProduct = function(productId) {
+			productToDelete = productId;
+			$('confirmDeleteModal').classList.add('show');
+		};
 
-        // Agregar nueva función para confirmar eliminación
-        window.confirmDeleteProduct = async function() {
-            if (!productToDelete) return;
-            
-            const button = $('confirmDeleteButton');
-            const originalText = button.innerHTML;
-            
-            // Mostrar estado de carga
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
-            button.disabled = true;
-            
-            try {
-                await remove(ref(db, `Pedidos/${productToDelete}`));
-                showToast('Producto eliminado', 'success');
-                
-                // Recargar los productos en el admin
-                renderAdminProducts();
-                
-                // También recargar en la vista principal
-                setTimeout(() => {
-                    loadData(); // Esto recargará productos desde Firebase
-                }, 1000);
-                
-            } catch (error) {
-                console.error('Error deleting product:', error);
-                showToast('Error al eliminar producto', 'error');
-            } finally {
-                // Restaurar botón
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                    button.disabled = false;
-                    closeModal('confirmDeleteModal');
-                    productToDelete = null;
-                }, 1000);
-            }
-        };
+		// Agregar nueva función para confirmar eliminación
+		window.confirmDeleteProduct = async function() {
+			if (!productToDelete) return;
+			
+			const button = $('confirmDeleteButton');
+			const originalText = button.innerHTML;
+			
+			// Mostrar estado de carga
+			button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
+			button.disabled = true;
+			
+			try {
+				await remove(ref(db, `Pedidos/${productToDelete}`));
+				showToast('Producto eliminado', 'success');
+				
+				// VERIFICAR SI EL PRODUCTO ELIMINADO ES EL QUE SE ESTABA EDITANDO
+				const editingProductId = $('product-id').value;
+				if (productToDelete === editingProductId) {
+					// Limpiar el formulario de edición
+					$('product-form').reset();
+					$('product-id').value = '';
+					$('product-form-title').textContent = 'Añadir Nuevo Producto';
+					
+					// Restaurar el botón a su estado original
+					const submitButton = $('product-form').querySelector('button[type="submit"]');
+					submitButton.innerHTML = '<i class="fas fa-plus"></i> Guardar Producto';
+				}
+				
+				// Recargar los productos en el admin
+				renderAdminProducts();
+				
+				// También recargar en la vista principal
+				setTimeout(() => {
+					loadData(); // Esto recargará productos desde Firebase
+				}, 1000);
+				
+			} catch (error) {
+				console.error('Error deleting product:', error);
+				showToast('Error al eliminar producto', 'error');
+			} finally {
+				// Restaurar botón
+				setTimeout(() => {
+					button.innerHTML = originalText;
+					button.disabled = false;
+					closeModal('confirmDeleteModal');
+					productToDelete = null;
+				}, 1000);
+			}
+		};
         // También actualizar la función handleLogout para que sea accesible
         window.handleLogout = async function() {
             try {
