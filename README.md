@@ -4,9 +4,9 @@
 
 Este proyecto es un catálogo digital interactivo para la "Sandwichería El 10", desarrollado con **HTML, CSS y JavaScript, utilizando **Firebase** como backend para la gestión de productos, avisos y autenticación en tiempo real.
 
-**➡️ Ver Web 1.0 en vivo:** [Sandwichería El 10 - V1](https://sandwicheriael10.vercel.app/)
+**➡️ Ver Web 1.0 en vivo:** [Versión 1](https://sandwicheriael10.vercel.app/)
 
-**➡️ Ver Web 2.0 en vivo:** [Sandwichería El 10 - V2](https://sandwicheriael10.netlify.app/)
+**➡️ Ver Web 2.0 en vivo:** [Versión 2](https://sandwicheriael10.netlify.app/)
 
 ---
 
