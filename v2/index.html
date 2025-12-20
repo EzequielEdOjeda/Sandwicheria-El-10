@@ -2139,7 +2139,7 @@
 				const hint = document.getElementById('intro-hint');
 				
 				if (button && button.disabled) {
-					showToast('Espera a que el sitio termine de cargar...', 'warning');
+					showToast('Procesando...', 'warning');
 					return;
 				}
 				
@@ -3320,7 +3320,7 @@
                     console.error('Error saving cart:', e);
                 }
                 
-                showToast(`Producto eliminado del carrito`, 'error');
+                showToast(`Producto removido del carrito`, 'info');
                 renderCart();
                 updateProductButtons();
                 renderProducts()
@@ -3946,7 +3946,7 @@
             
             try {
                 await remove(ref(db, `Pedidos/${productToDelete}`));
-                showToast('Producto eliminado', 'error');
+                showToast('Producto eliminado', 'success');
                 
                 // Recargar los productos en el admin
                 renderAdminProducts();
