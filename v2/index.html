@@ -1070,7 +1070,7 @@
             right: -100%; 
             width: 100%; 
             max-width: 450px; 
-            height: 100vh;
+            height: 100%;
             background: white; 
             z-index: 20001; 
             transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
@@ -2183,6 +2183,22 @@
         }
 		
 		.d-none { display: none !important; }
+		
+		/* Agregar al final del CSS */
+		.cart-empty-link {
+			display: inline-block;
+			color: #20c997;
+			padding: 12px 30px;
+			font-weight: 600;
+			text-decoration: none;
+			transition: all 0.3s ease;
+			margin-top: 5px;
+		}
+
+		.cart-empty-link:hover {
+		    text-decoration: underline;
+			transform: translateY(-2px);
+		}
     </style>
 </head>
 
@@ -2717,12 +2733,12 @@
             <button class="modal-close" onclick="toggleCart(false)">&times;</button>
         </div>
         <div class="cart-body" id="cartItems">
-            <div style="text-align: center; margin-top: 30%; padding: 40px; color: #999;">
+            <div style="text-align: center; margin-top: 50%; padding: 5px 5px; color: #999;">
                 <i class="fas fa-shopping-cart fa-2x" style=" margin-bottom: 15px; opacity: 0.5;"></i>
                 <p>El carrito está vacío.</p>
             </div>
         </div>
-        <div class="cart-footer">
+        <div class="cart-footer" id="cartFooter">
             <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:18px; font-weight:700;">
                 <span>Total</span>
                 <span id="cartTotal">$0</span>
@@ -2769,30 +2785,29 @@
 
        /// Al inicio del script, después de cargar el carrito del localStorage
         window.onload = () => {
-            loadData();
-            setupEventListeners();
-            handleResize(); 
-            
-            // Limpiar localStorage del carrito (opcional, descomenta si quieres)
-            // localStorage.removeItem('el10_cart');
-            // cart = [];
-            
-            const savedCart = localStorage.getItem('el10_cart');
-            if (savedCart) {
-                try {
-                    cart = JSON.parse(savedCart);
-                    renderCart();
-                    
-                    // IMPORTANTE: Actualizar botones después de cargar el carrito
-                    setTimeout(() => {
-                        updateProductButtons();
-                    }, 500); // Pequeño delay para asegurar que los productos estén cargados
-                } catch(e) {
-                    console.error('Error loading cart:', e);
-                    cart = [];
-                }
-            }
-        };
+			loadData();
+			setupEventListeners();
+			handleResize(); 
+			
+			const savedCart = localStorage.getItem('el10_cart');
+			if (savedCart) {
+				try {
+					cart = JSON.parse(savedCart);
+					renderCart();
+					
+					setTimeout(() => {
+						updateProductButtons();
+					}, 500);
+				} catch(e) {
+					console.error('Error loading cart:', e);
+					cart = [];
+				}
+			} else {
+				// Si no hay carrito guardado, asegurar que el carrito esté vacío y renderizar
+				cart = [];
+				renderCart();
+			}
+		};
    // En el módulo principal, modifica la función enterSite
     window.enterSite = function() {
         const overlay = $('intro-overlay');
@@ -3186,69 +3201,89 @@
         }
         
         function renderCart() {
-            const container = $('cartItems');
-            const totalElement = $('cartTotal');
-            const countElement = $('cartCount');
-            const checkoutBtn = $('checkoutBtn');
-            
-            if (cart.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 40px; margin-top: 30%; color: #999;">
-                        <i class="fas fa-shopping-cart fa-2x" style="margin-bottom: 15px; opacity: 0.5;"></i>
-                        <p>El carrito está vacío.</p>
-                    </div>
-                `;
-                totalElement.textContent = '$0';
-                countElement.textContent = '0';
-                checkoutBtn.disabled = true;
-                
-                // Limpiar localStorage cuando el carrito está vacío
-                localStorage.removeItem('el10_cart');
-                return;
-            }
-            
-            let total = 0;
-            let html = '';
-            
-            cart.forEach((item, index) => {
-                const itemTotal = item.price * item.quantity;
-                total += itemTotal;
-                
-                html += `
-                    <div class="cart-item">
-                        <img src="${item.img}" alt="${item.name}" 
-                     onerror="this.src='not-image.jpg'; this.onerror=null;">
-                        <div class="cart-item-details">
-                            <div class="cart-item-title">${item.name}</div>
-                            <div style="font-weight:700;">$${itemTotal.toLocaleString('es-AR')}</div>
-                            <div class="cart-qty-ctrl">
-                                <button class="qty-btn-mini" onclick="updateCartItem(${index}, -1)">-</button>
-                                <span>${item.quantity}</span>
-                                <button class="qty-btn-mini" onclick="updateCartItem(${index}, 1)">+</button>
-                                <button onclick="removeCartItem(${index})" style="margin-left:auto;border:none;background:none;color:var(--danger);">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-            totalElement.textContent = `$${total.toLocaleString('es-AR')}`;
-            countElement.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
-            checkoutBtn.disabled = false;
-            
-            // Guardar en localStorage
-            try {
-                localStorage.setItem('el10_cart', JSON.stringify(cart));
-            } catch (e) {
-                console.error('Error saving cart to localStorage:', e);
-            }
-            
-            // Actualizar botones de productos
-            updateProductButtons();
-        }
+			const container = $('cartItems');
+			const totalElement = $('cartTotal');
+			const countElement = $('cartCount');
+			const checkoutBtn = $('checkoutBtn');
+			const cartFooter = $('cartSidebar').querySelector('.cart-footer');
+
+            // Asegurarnos de que el footer sea visible inicialmente
+			if (cartFooter) {
+				cartFooter.style.display = 'block';
+			}
+
+			if (cart.length === 0) {
+				container.innerHTML = `
+					<div style="text-align: center; padding: 5px 5px; margin-top: 50%;   color: #999;">
+						<i class="fas fa-shopping-cart fa-3x" style="margin-bottom: 20px; opacity: 0.5;"></i>
+						<p style="font-size: 16px; margin-bottom: 25px;">El carrito está vacío.</p>
+						<a href="#menu-sectionn" onclick="toggleCart(false)" 
+						   class="cart-empty-link">
+							<i class="fas fa-utensils"></i> Volver al Menú
+						</a>
+					</div>
+				`;
+				totalElement.textContent = '$0';
+				countElement.textContent = '0';
+				checkoutBtn.disabled = true;
+				
+				// Ocultar el footer del carrito
+				if (cartFooter) {
+					cartFooter.style.display = 'none';
+				}
+				
+				// Limpiar localStorage cuando el carrito está vacío
+				localStorage.removeItem('el10_cart');
+				return;
+			} else {
+				// Si hay productos, mostrar el footer
+				if (cartFooter) {
+					cartFooter.style.display = 'block';
+				}
+			}
+			
+			let total = 0;
+			let html = '';
+			
+			cart.forEach((item, index) => {
+				const itemTotal = item.price * item.quantity;
+				total += itemTotal;
+				
+				html += `
+					<div class="cart-item">
+						<img src="${item.img}" alt="${item.name}" 
+							 onerror="this.src='not-image.jpg'; this.onerror=null;">
+						<div class="cart-item-details">
+							<div class="cart-item-title">${item.name}</div>
+							<div style="font-weight:700;">$${itemTotal.toLocaleString('es-AR')}</div>
+							<div class="cart-qty-ctrl">
+								<button class="qty-btn-mini" onclick="updateCartItem(${index}, -1)">-</button>
+								<span>${item.quantity}</span>
+								<button class="qty-btn-mini" onclick="updateCartItem(${index}, 1)">+</button>
+								<button onclick="removeCartItem(${index})" style="margin-left:auto;border:none;background:none;color:var(--danger);">
+									<i class="fas fa-trash"></i>
+								</button>
+							</div>
+						</div>
+					</div>
+				`;
+			});
+			
+			container.innerHTML = html;
+			totalElement.textContent = `$${total.toLocaleString('es-AR')}`;
+			countElement.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+			checkoutBtn.disabled = false;
+			
+			// Guardar en localStorage
+			try {
+				localStorage.setItem('el10_cart', JSON.stringify(cart));
+			} catch (e) {
+				console.error('Error saving cart to localStorage:', e);
+			}
+			
+			// Actualizar botones de productos
+			updateProductButtons();
+		}
         
        function updateProductButtons() {
             // Actualizar botones en la grilla de productos
