@@ -2453,13 +2453,13 @@
     </div>
                     <form id="aviso-form" class="support-form">
                         <label>Título</label>
-                        <input type="text" id="aviso-titulo" class="custom-input" placeholder="Ej: ¡Promoción Especial!">
+                        <input type="text" id="aviso-titulo" class="custom-input" placeholder="Ej: ¡Promoción Especial!" autocomplete="off">
                         
                         <label>Mensaje</label>
                         <textarea id="aviso-mensaje" class="custom-textarea" placeholder="Ej: 2x1 en todas las pizzas este fin de semana..."></textarea>
                         
                         <label>URL de Imagen (Opcional)</label>
-                        <input type="text" id="aviso-imagen" class="custom-input" placeholder="https://ejemplo.com/imagen.jpg">
+                        <input type="text" id="aviso-imagen" class="custom-input" placeholder="https://ejemplo.com/imagen.jpg" autocomplete="off">
                         
                         <!-- BOTÓN CENTRADO -->
                     <button type="submit" class="btn-checkout" style="justify-content: center; gap: 10px; margin-top: 20px;">
@@ -2841,7 +2841,7 @@
                                         <img src="${imageUrl}" 
                                              class="announcement-image" 
                                              onclick="showFullscreenImage('${imageUrl}')"
-                                             alt="Aviso">
+                                             alt="Aviso" onerror="this.src='not-image.jpg'; this.onerror=null;">
                                     ` : ''}
                                     <button class="btn-close-announcement" onclick="closeAnnouncement()">
                                         Entendido
