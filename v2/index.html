@@ -47,21 +47,26 @@
         }
         
         body { 
+		    -webkit-tap-highlight-color: transparent;
             font-family: 'Roboto', sans-serif; 
             background-color: var(--light); 
             color: var(--secondary); 
             line-height: 1.6;
             overflow-x: hidden;
-            overflow: hidden;
+            /* El overflow se gestionará vía JS para los modales */
         }
-        body.can-scroll {
-            overflow: auto;
-            height: auto;
+        
+        /* Clase utilitaria para bloquear el scroll */
+        body.no-scroll {
+            overflow: hidden !important;
+            height: 100% !important;
+            touch-action: none; /* Bloqueo adicional para móviles */
         }
+
         h1, h2, h3, h4 { 
             font-family: 'Poppins', sans-serif; 
             font-weight: 700;
-            padding:20px;
+            padding: 20px;
         }
 
         a { 
@@ -84,11 +89,19 @@
             transition: var(--transition);
         }
         
+        /* CORRECCIÓN 1: Contenedor más ancho para PC */
         .container { 
-            max-width: 1200px; 
+            max-width: 1400px; /* Aumentado de 1200px */
             margin: 0 auto; 
-            padding: 0 15px; 
+            padding: 0 20px; 
             width: 100%;
+        }
+
+        /* Para pantallas muy grandes (Full HD+) */
+        @media (min-width: 1600px) {
+            .container {
+                max-width: 1600px;
+            }
         }
         
         .row-flex { 
@@ -523,7 +536,7 @@
             display: flex;
             align-items: center;
             gap: 5px;
-            padding: 8px 12px;
+            padding: 8px 12px; 
             border-radius: 6px;
             font-size: 14px;
             font-weight: 500;
@@ -1770,7 +1783,28 @@
             padding: 50px 0 20px; 
             margin-top: 50px; 
             font-size: 14px; 
-            text-align: left; 
+            /* text-align will be handled per column */
+        }
+        
+        /* CORRECCIÓN 2: Footer Grid Mejorado */
+        .footer-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            text-align: left;
+        }
+        
+        /* Centrado en móviles */
+        @media (max-width: 767px) {
+            .footer-grid-container {
+                text-align: center;
+                grid-template-columns: 1fr;
+            }
+            .footer-grid-container > div {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
         }
         
         .footer-logo { 
@@ -2053,9 +2087,6 @@
             .social-desktop {
                 display: block;
             }
-            .footer-main {
-                text-align: left; /* o lo que tenías antes, por defecto es left */
-            }
         }
         /* Botones centrados en panel admin */
         .admin-modal .btn-checkout {
@@ -2092,9 +2123,6 @@
                 height: 100% !important;
             }
 
-            .footer-main {
-                text-align: center;
-            }
             .footer-main .container > div {
                 justify-items: center;
             }
@@ -2202,7 +2230,7 @@
     </style>
 </head>
 
-<body>
+<body class="no-scroll">
 
     <!-- INTRO SPLASH OVERLAY -->
     <div id="intro-overlay">
@@ -2247,7 +2275,12 @@
 					overlay.style.transition = 'opacity 0.5s ease';
 					
 					// Habilitar scroll
-					document.body.style.overflow = 'auto';
+                    // SE HA MODIFICADO ESTA LÍNEA PARA USAR LA FUNCIÓN CENTRALIZADA
+					if (typeof toggleBodyScroll === 'function') {
+                        toggleBodyScroll(false);
+                    } else {
+                        document.body.classList.remove('no-scroll');
+                    }
 					document.body.classList.add('can-scroll');
 					
 					// Ocultar completamente después de la animación
@@ -2278,7 +2311,7 @@
 				<span id="enter-site-text">Cargando...</span>
 			</button>
             <div class="intro-hint d-none" id="introHint">
-                <i class="fas fa-chevron-up"></i> Toca para comenzar
+                <i class="fas fa-chevron-up"></i> Toca Aquí
             </div>
         </div>
         
@@ -2345,7 +2378,7 @@
             </div>
             <div class="modal-body-scroll" style="padding:0; overflow:hidden;">
                 <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3621.112942592123!2d-65.42451568499816!3d-24.82926958406839!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x941bc3b8fdd16e3d%3A0xa1d9bfa97261bf53!2sS%C3%A1ndwicheria%20el%2010!5e0!3m2!1ses-419!2sar!4v1657651234567!5m2!1ses-419!2sar" 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3621.112942592123!2d-65.42451568499816!3d-24.82926958406839!2m3!1f0!2f0!3f0!3m2!1f1024!2f768!4f13.1!3m3!1m2!1s0x941bc3b8fdd16e3d%3A0xa1d9bfa97261bf53!2sS%C3%A1ndwicheria%20el%2010!5e0!3m2!1ses-419!2sar!4v1657651234567!5m2!1ses-419!2sar" 
                     width="100%" 
                     height="100%" 
                     style="border:0;" 
@@ -2368,9 +2401,9 @@
         
         <nav class="mobile-nav">
             <a href="#menu-sectionn" onclick="closeMobileMenu()"><i class="fas fa-utensils"></i> Nuestro Menú</a>
-            <a href="#" onclick="openInfoModal('nosotros'); closeMobileMenu()"><i class="fas fa-info-circle"></i> Sobre Nosotros</a>
-            <a href="#" onclick="openSupportModal(); closeMobileMenu()"><i class="fas fa-headset"></i> Centro de Ayuda</a>
-            <a href="#" onclick="openLoginModal(); closeMobileMenu()" class="admin-link"><i class="fas fa-lock"></i> Área Administrativa</a>
+            <a href="#" onclick="openInfoModal('nosotros'); closeMobileMenuu()"><i class="fas fa-info-circle"></i> Sobre Nosotros</a>
+            <a href="#" onclick="openSupportModal(); closeMobileMenuu()"><i class="fas fa-headset"></i> Centro de Ayuda</a>
+            <a href="#" onclick="openLoginModal(); closeMobileMenuu()" class="admin-link"><i class="fas fa-lock"></i> Área Administrativa</a>
         </nav>
         
     </div>
@@ -2416,16 +2449,16 @@
     <!-- FOOTER -->
     <footer class="footer-main" id="footer">
         <div class="container">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px;">
+            <div class="footer-grid-container">
                 <div>
                     <div class="footer-logo">EL 10</div>
                     <p>La tradición del buen comer en Salta. Sándwiches gigantes, atención de primera y el sabor de siempre.</p>
                     <div class="social-desktop" style="margin-top:20px;">
-    <a href="https://wa.me/5493874653455" class="social-link"><i class="fab fa-whatsapp"></i></a>
-    <a href="https://www.facebook.com/emanuel.gumilla5" class="social-link"><i class="fab fa-facebook-f"></i></a>
-    <a href="https://www.instagram.com/el10sandwicheria" class="social-link"><i class="fab fa-instagram"></i></a>
-    <a href="https://www.tiktok.com/@el10.sandwicheria.salta" class="social-link"><i class="fab fa-tiktok"></i></a>
-</div>
+                        <a href="https://wa.me/5493874653455" class="social-link"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://www.facebook.com/emanuel.gumilla5" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/el10sandwicheria" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.tiktok.com/@el10.sandwicheria.salta" class="social-link"><i class="fab fa-tiktok"></i></a>
+                    </div>
                 </div>
                 <div>
                     <h3 style="color:white; margin-bottom:20px;">Enlaces Útiles</h3>
@@ -2433,7 +2466,7 @@
                         <li><a href="#menu-sectionn">Nuestro Menú</a></li>
                         <li><a onclick="openInfoModal('nosotros')">Sobre Nosotros</a></li>
                         <li><a onclick="openSupportModal()">Centro de Ayuda</a></li>
-                        <li><a onclick="openLoginModal(); closeMobileMenu()">Área Administrativa</a></li>
+                        <li><a onclick="openLoginModal();">Área Administrativa</a></li>
                     </ul>
                 </div>
                 <div>
@@ -2445,14 +2478,13 @@
                         <li style="margin-top:10px; color:var(--success); font-weight:bold;"><i class="fas fa-clock"></i> Abierto: 20:00 - 03:00</li>
                     </ul>                    
                 
-                <div class="social-mobile" style="margin-top:20px;">
-    <a href="https://wa.me/5493874653455" class="social-link"><i class="fab fa-whatsapp"></i></a>
-    <a href="https://www.facebook.com/emanuel.gumilla5" class="social-link"><i class="fab fa-facebook-f"></i></a>
-    <a href="https://www.instagram.com/el10sandwicheria" class="social-link"><i class="fab fa-instagram"></i></a>
-    <a href="https://www.tiktok.com/@el10.sandwicheria.salta" class="social-link"><i class="fab fa-tiktok"></i></a>
-</div>
-
-</div>
+                    <div class="social-mobile" style="margin-top:20px;">
+                        <a href="https://wa.me/5493874653455" class="social-link"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://www.facebook.com/emanuel.gumilla5" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/el10sandwicheria" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.tiktok.com/@el10.sandwicheria.salta" class="social-link"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
             </div>
             <div style="border-top:1px solid #333; margin-top:40px; padding-top:20px; text-align:center;">
                 &copy; 2025 Sandwichería El 10. Todos los derechos reservados.
@@ -2782,6 +2814,16 @@
         let itemsPerPage = 8;
         let buttonTimeouts = {};
         let adminUser = null;
+        
+        // --- SCROLL MANAGEMENT FUNCTION ---
+        // Esta función gestiona el bloqueo del scroll cuando hay modales abiertos
+        window.toggleBodyScroll = function(disable) {
+            if (disable) {
+                document.body.classList.add('no-scroll');
+            } else {
+                document.body.classList.remove('no-scroll');
+            }
+        };
 
        /// Al inicio del script, después de cargar el carrito del localStorage
         window.onload = () => {
@@ -2815,7 +2857,8 @@
         
         // Si ya se usó el fallback, solo asegurar que esté oculto
         if (overlay.style.display === 'none' || overlay.style.opacity === '0') {
-            document.body.style.overflow = 'auto';
+            // USAR FUNCIÓN CENTRALIZADA
+            toggleBodyScroll(false);
             document.body.classList.add('can-scroll');
             return;
         }
@@ -2831,7 +2874,7 @@
         
         // Habilitar scroll después de la animación
         setTimeout(() => {
-            document.body.style.overflow = 'auto';
+            toggleBodyScroll(false);
             document.body.classList.add('can-scroll');
         }, 800);
         
@@ -3022,6 +3065,8 @@
 						// Mostrar con retraso para mejor UX
 						setTimeout(() => {
 							announcement.classList.add('show');
+                            // BLOQUEAR SCROLL
+                            toggleBodyScroll(true);
 							console.log("🎉 Popup de anuncio mostrado");
 							
 							// Auto-cerrar después de 30 segundos
@@ -3047,6 +3092,8 @@
             const announcement = document.querySelector('.announcement-popup.show');
             if (announcement) {
                 announcement.classList.remove('show');
+                // HABILITAR SCROLL
+                toggleBodyScroll(false);
                 setTimeout(() => {
                     if (announcement.parentNode) {
                         announcement.remove();
@@ -3463,11 +3510,13 @@
             if (show) {
                 sidebar.classList.add('show');
                 overlay.classList.add('show');
-                document.body.style.overflow = 'hidden';
+                // document.body.style.overflow = 'hidden'; 
+                // Usamos la nueva función global para mantener coherencia
+                toggleBodyScroll(true);
             } else {
                 sidebar.classList.remove('show');
                 overlay.classList.remove('show');
-                document.body.style.overflow = '';
+                toggleBodyScroll(false);
             }
             
         };
@@ -3518,6 +3567,8 @@
             }
             
             modal.classList.add('show');
+            // BLOQUEAR SCROLL
+            toggleBodyScroll(true);
         };
 
         // --- CHECKOUT ---
@@ -3530,6 +3581,8 @@
             toggleCart(false);
             renderCart();
             $('checkoutModalOverlay').classList.add('show');
+            // BLOQUEAR SCROLL
+            toggleBodyScroll(true);
         };
         
         window.setDeliveryMode = function(mode) {
@@ -3616,6 +3669,8 @@
         // --- MODAL FUNCTIONS ---
         window.closeModal = function(modalId) {
 			$(modalId).classList.remove('show');
+            // HABILITAR SCROLL
+            toggleBodyScroll(false);
 			
 			// Si se cierra el modal de confirmación, limpiar la variable
 			if (modalId === 'confirmDeleteModal') {
@@ -3628,9 +3683,13 @@
             });
             toggleCart(false);
             renderCart();
+            // HABILITAR SCROLL
+            toggleBodyScroll(false);
         }
         window.openMapModal = function() {
             $('mapModalOverlay').classList.add('show');
+            // BLOQUEAR SCROLL
+            toggleBodyScroll(true);
         };
         window.openInfoModal = function(type) {
             const titles = {
@@ -3644,10 +3703,14 @@
             $('infoModalTitle').textContent = titles[type] || 'Información';
             $('infoModalBody').innerHTML = messages[type] || 'Información no disponible.';
             $('infoModalOverlay').classList.add('show');
+            // BLOQUEAR SCROLL
+            toggleBodyScroll(true);
         };
         
         window.openSupportModal = function() {
             $('supportModalOverlay').classList.add('show');
+            // BLOQUEAR SCROLL
+            toggleBodyScroll(true);
         };
         
         window.handleSupportSubmit = function(e) {
@@ -3675,6 +3738,8 @@
         
         window.openLoginModal = function() {
             $('loginModalOverlay').classList.add('show');
+            // BLOQUEAR SCROLL
+            toggleBodyScroll(true);
         };
         
         async function handleLoginSubmit(e) {
@@ -3706,8 +3771,16 @@
                 const snapshot = await get(roleRef);
                 
                 if (snapshot.exists() && snapshot.val() === 'admin') {
+                    // AQUÍ ESTÁ EL TRUCO PARA MANTENER EL SCROLL BLOQUEADO
+                    // Primero cerramos el modal de login (esto habilitaría scroll)
                     closeModal('loginModalOverlay');
+                    
+                    // Inmediatamente mostramos el panel admin
                     $('adminPanelOverlay').classList.add('show');
+                    
+                    // Y VOLVEMOS A BLOQUEAR SCROLL EXPLÍCITAMENTE
+                    toggleBodyScroll(true);
+                    
                     loadAdminData();
                     
                     setTimeout(() => {
@@ -4106,6 +4179,8 @@
                 await signOut(auth);
                 adminUser = null;
                 closeModal('adminPanelOverlay');
+                // HABILITAR SCROLL
+                toggleBodyScroll(false);
                 showToast('Sesión cerrada', 'success');
             } catch (error) {
                 console.error('Logout error:', error);
@@ -4132,7 +4207,7 @@
         
         function handleResize() {
             // Update items per page based on screen size
-            itemsPerPage = window.innerWidth <= 767 ? 8 : 12;
+            itemsPerPage = window.innerWidth <= 767 ? 8 : 15;
             renderProducts();
         }
         
@@ -4140,6 +4215,8 @@
             const announcement = document.querySelector('.announcement-popup.show');
             if (announcement) {
                 announcement.classList.remove('show');
+                // HABILITAR SCROLL
+                toggleBodyScroll(false);
                 setTimeout(() => announcement.remove(), 300);
             }
         };
@@ -4150,12 +4227,14 @@
             
             img.src = imageUrl;
             overlay.classList.add('show');
-            document.body.style.overflow = 'hidden';
+            // document.body.style.overflow = 'hidden';
+            toggleBodyScroll(true);
         };
         
         window.closeFullscreenImage = function() {
             $('fullscreenImageOverlay').classList.remove('show');
-            document.body.style.overflow = '';
+            // document.body.style.overflow = '';
+            toggleBodyScroll(false);
         };
         
         window.toggleMobileMenu = function() {
@@ -4166,14 +4245,27 @@
             menu.classList.toggle('active');
             overlay.classList.toggle('active');
             button.classList.toggle('active');
-            document.body.style.overflow = menu.classList.contains('active') ? 'hidden' : '';
+            
+            // Bloquear scroll si el menú está activo
+            if (menu.classList.contains('active')) {
+                toggleBodyScroll(true);
+            } else {
+                toggleBodyScroll(false);
+            }
         };
         
         window.closeMobileMenu = function() {
             $('mobileMenu').classList.remove('active');
             $('mobileMenuOverlay').classList.remove('active');
             $('hamburgerBtn').classList.remove('active');
-            document.body.style.overflow = '';
+            toggleBodyScroll(false);
+        };
+		
+		window.closeMobileMenuu = function() {
+            $('mobileMenu').classList.remove('active');
+            $('mobileMenuOverlay').classList.remove('active');
+            $('hamburgerBtn').classList.remove('active');
+            toggleBodyScroll(True);
         };
 
         // --- TOAST NOTIFICATIONS ---
