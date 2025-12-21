@@ -1782,9 +1782,20 @@
             color: #adb5bd; 
             padding: 50px 0 20px; 
             margin-top: 50px; 
-            font-size: 14px; 
+            font-size: 17px; 
+			text-size-adjust: none;
+			-webkit-text-size-adjust: none;
+			-moz-text-size-adjust: none;
+			-ms-text-size-adjust: none;
             /* text-align will be handled per column */
         }
+		.footer-main,
+			.footer-main p,
+			.footer-main a,
+			.footer-main li,
+			.footer-main span,{
+				font-size: inherit;
+			}
         
         /* CORRECCIÓN 2: Footer Grid Mejorado */
         .footer-grid-container {
@@ -1810,13 +1821,14 @@
         .footer-logo { 
             color: white; 
             font-weight: 900; 
-            font-size: 38px; 
+            font-size: 30px; 
             margin-bottom: 10px; 
             display: inline-block; 
         }
         
         .footer-links li { 
             margin-bottom: 10px; 
+			word-spacing: 2px;
         }
         
         .footer-links a:hover { 
@@ -2172,13 +2184,13 @@
             color: white;
             margin: 0 0 20px 0 !important;
             padding: 0 !important;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
         }
 
         /* 3. Asegurar que los div padres no agreguen padding */
         .footer-main > .container > div > div {
-            padding: 0 !important;
+            padding: 10px 8%;
         }
 
         /* 5. Sobreescribir cualquier estilo que cause padding */
@@ -2459,7 +2471,7 @@
         <div class="container">
             <div class="footer-grid-container">
                 <div>
-                    <div class="footer-logo">EL 10</div>
+                    <div class="footer-logo" style="font-size: 30px;">EL 10</div>
                     <p>La tradición del buen comer en Salta. Sándwiches gigantes, atención de primera y el sabor de siempre.</p>
                     <div class="social-desktop" style="margin-top:20px;">
                         <a href="https://wa.me/5493874653455" class="social-link"><i class="fab fa-whatsapp"></i></a>
