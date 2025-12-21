@@ -51,7 +51,7 @@
             font-family: 'Roboto', sans-serif; 
             background-color: var(--light); 
             color: var(--secondary); 
-            line-height: 1.6;
+            line-height: 1;
             overflow-x: hidden;
             /* El overflow se gestionará vía JS para los modales */
         }
@@ -1987,7 +1987,7 @@
             }
             
             .modal-card {
-                max-height: 90vh;
+                max-height: 100%;
             }
                       
             .modal-body-scroll {
@@ -2156,7 +2156,7 @@
             /* Ajuste específico para el mapa en móvil */
             #mapModalOverlay .modal-card {
                 max-width: 100vw !important;
-                height: 80vh !important;
+                height: 70vh !important;
             }
             
             #mapModalOverlay iframe {
@@ -2845,7 +2845,7 @@
                 <div id="pickupInfoBox" class="pickup-info-box" style="display:none;">
                     <i class="fas fa-map-pin"></i>
                     <div>PUNTO DE ENTREGA</div>
-                    <div class="pickup-text"><a href="#" onclick="openMapModal()">Independencia 889, Salta<a></div>
+                    <div class="pickup-text"><a onclick="openMapModal()">Independencia 889, Salta<a></div>
                 </div>
 
                 <form id="checkoutForm">
