@@ -2268,6 +2268,44 @@
 		    text-decoration: underline;
 			transform: translateY(-2px);
 		}
+		
+		.cart-empty-message {
+			text-align: center;
+			color: #999;
+			padding: 5px 5px;
+		}
+
+		/* PC */
+		@media (min-width: 1025px) {
+			.cart-empty-message {
+				margin-top: 40%;
+			}
+		}
+
+		/* Tablet */
+		@media (min-width: 481px) and (max-width: 1024px) {
+			.cart-empty-message {
+				margin-top: 30%;
+			}
+		}
+
+		/* Móvil */
+		@media (max-width: 480px) {
+			.cart-empty-message {
+				margin-top: 40%;
+			}
+		}
+
+		.cart-empty-message i.fa-shopping-cart {
+			margin-bottom: 20px;
+			opacity: 0.5;
+		}
+
+		.cart-empty-message p {
+			font-size: 16px;
+			margin-bottom: 25px;
+		}
+
 		#limpiar-aviso {
 			font-weight: 700;
 			background:var(--text-grey);
@@ -2275,6 +2313,48 @@
 		}
 		#limpiar-aviso:hover {
 			background: #fd432e;
+		}
+		/* ================= MEDIA QUERIES PARA TABLET ================= */
+
+		/* Tablet: 768px a 1024px */
+		@media (min-width: 768px) and (max-width: 1024px) {
+			/* Ocultar logo-area en tablet */
+			.logo-text {
+				display: none !important;
+			}
+			
+			/* Ajustar el contenedor del header para compensar */
+			.main-header .container {
+				justify-content: space-between;
+			}
+			
+			/* Expandir el buscador en tablet */
+			.search-wrapper {
+				flex: 1;
+				margin: 0 15px !important;
+				max-width: 100% !important;
+			}
+			
+			/* Ajustar el hero banner */
+			.hero-banner {
+				height: 350px;
+			}
+			
+			.hero-title {
+				font-size: 2.5rem;
+			}
+			
+			/* Ajustar menú de navegación */
+			.nav-item {
+				padding: 15px 12px !important;
+				font-size: 13px !important;
+			}
+			
+			/* Ajustar grid de productos */
+			.products-grid {
+				grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+				gap: 15px !important;
+			}
 		}
     </style>
 </head>
@@ -2399,9 +2479,9 @@
             
             <div class="search-wrapper">
                 <div class="search-group">
-                    <input type="text" id="productSearchDesktop" placeholder="¿Qué se te antoja hoy?">
-                    <button><i class="fas fa-search"></i></button>
-                </div>
+				<input type="text" id="productSearchDesktop" placeholder="¿Qué se te antoja hoy?" onkeypress="handleSearchKeyPress(event, 'productSearchDesktop')">
+				<button onclick="performSearch('productSearchDesktop')"><i class="fas fa-search"></i></button>
+			</div>
             </div>
             
             <div class="header-actions">
@@ -2443,9 +2523,9 @@
         <div class="mobile-search-container">
         <div class="logo-box" style="margin-top: -20%; margin-bottom: 20px;">EL10</div>
             <div class="search-group">
-                <input type="text" id="productSearchMobile" placeholder="Buscar en el menú...">
-                <button><i class="fas fa-search"></i></button>
-            </div>
+				<input type="text" id="productSearchMobile" placeholder="Buscar en el menú..." onkeypress="handleSearchKeyPress(event, 'productSearchMobile')">
+				<button onclick="performSearch('productSearchMobile')"><i class="fas fa-search"></i></button>
+			</div>
         </div>
         
         <nav class="mobile-nav">
@@ -2460,9 +2540,9 @@
     <!-- MOBILE SEARCH IN CATEGORIES BAR -->
     <div class="mobile-cat-search">
         <div class="search-group">
-            <input type="text" id="productSearchMobileCat" placeholder="Buscar productos...">
-            <button><i class="fas fa-search"></i></button>
-        </div>
+			<input type="text" id="productSearchMobileCat" placeholder="Buscar productos..." onkeypress="handleSearchKeyPress(event, 'productSearchMobileCat')">
+			<button onclick="performSearch('productSearchMobileCat')"><i class="fas fa-search"></i></button>
+		</div>
     </div>
 
     <!-- HERO BANNER -->
@@ -2814,7 +2894,7 @@
             <button class="modal-close" onclick="toggleCart(false)">&times;</button>
         </div>
         <div class="cart-body" id="cartItems">
-            <div style="text-align: center; margin-top: 50%; padding: 5px 5px; color: #999;">
+            <div style="text-align: center; padding: 5px 5px; color: #999;">
                 <i class="fas fa-shopping-cart fa-2x" style=" margin-bottom: 15px; opacity: 0.5;"></i>
                 <p>El carrito está vacío.</p>
             </div>
@@ -2953,6 +3033,16 @@
             $('productSearchMobile').oninput = handleSearch;
             $('productSearchMobileCat').oninput = handleSearch;
             
+			// Añadir eventos para los botones de búsqueda
+			document.querySelectorAll('.search-group button').forEach(button => {
+				button.addEventListener('click', function() {
+					const input = this.closest('.search-group').querySelector('input');
+					if (input && input.value.trim()) {
+						performSearch(input.id);
+					}
+				});
+			});
+			
             // Checkout form
             $('checkoutForm').onsubmit = handleCheckoutSubmit;
             
@@ -2980,6 +3070,63 @@
                 }
             });
         }
+		
+		// --- SEARCH SCROLL FUNCTIONS ---
+		function handleSearchKeyPress(e, searchId) {
+			if (e.key === 'Enter') {
+				e.preventDefault();
+				performSearch(searchId);
+			}
+		}
+		
+		window.handleSearchKeyPress = function(e, searchId) {
+			if (e.key === 'Enter') {
+				e.preventDefault();
+				performSearch(searchId);
+			}
+		};
+
+		function performSearch(searchId) {
+			const searchInput = document.getElementById(searchId);
+			if (searchInput) {
+				const searchTerm = searchInput.value.trim();
+								
+				// Borrar los otros campos de búsqueda
+				const otherSearchIds = ['productSearchDesktop', 'productSearchMobile', 'productSearchMobileCat'];
+				otherSearchIds.forEach(id => {
+					if (id !== searchId) {
+						const otherInput = document.getElementById(id);
+						if (otherInput) {
+							otherInput.value = '';
+						}
+					}
+				});
+				
+				// Solo hacer scroll si hay término de búsqueda
+				if (searchTerm) {
+					// Forzar el filtrado de productos
+					currentPage = 1;
+					renderProducts();
+					
+					// Hacer scroll suave a la sección del menú
+					setTimeout(() => {
+						const menuSection = document.getElementById('menu-section');
+						if (menuSection) {
+							const headerHeight = document.querySelector('.main-header').offsetHeight;
+							const catBarHeight = document.querySelector('.cat-bar').offsetHeight;
+							const totalOffset = headerHeight + catBarHeight + 20;
+							
+							window.scrollTo({
+								top: menuSection.offsetTop - totalOffset,
+								behavior: 'smooth'
+							});
+						}
+					}, 100);
+				}
+				// Cerrar el menú móvil si está abierto
+				closeMobileMenu();
+			}
+		}
 		
 		function enableEnterButton() {
 			const button = document.getElementById('enter-site-btn');
@@ -3314,14 +3461,14 @@
 
 			if (cart.length === 0) {
 				container.innerHTML = `
-					<div style="text-align: center; padding: 5px 5px; margin-top: 50%;   color: #999;">
-						<i class="fas fa-shopping-cart fa-3x" style="margin-bottom: 20px; opacity: 0.5;"></i>
-						<p style="font-size: 16px; margin-bottom: 25px;">El carrito está vacío.</p>
-						<a href="#menu-sectionn" onclick="toggleCart(false)" 
-						   class="cart-empty-link">
-							<i class="fas fa-utensils"></i> Volver al Menú
-						</a>
-					</div>
+					<div class="cart-empty-message">
+					<i class="fas fa-shopping-cart fa-3x"></i>
+					<p>El carrito está vacío.</p>
+					<a href="#menu-sectionn" onclick="toggleCart(false)" 
+					   class="cart-empty-link">
+						<i class="fas fa-utensils"></i> Volver al Menú
+					</a>
+				</div>
 				`;
 				totalElement.textContent = '$0';
 				countElement.textContent = '0';
