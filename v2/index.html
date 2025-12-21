@@ -1672,6 +1672,16 @@
             background: var(--primary-dark);
             transform: translateY(-2px);
         }
+		
+		/* Estilo para el mensaje de auto-cierre */
+		.announcement-body p:last-child {
+			margin-top: 15px;
+			font-size: 12px;
+			color: #999;
+			text-align: center;
+			padding-top: 10px;
+			border-top: 1px dashed #eee;
+		}
 
         /* Fullscreen Image */
         .fullscreen-image-overlay {
@@ -1681,17 +1691,19 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.95);
-            z-index: 50000;
+            z-index: 200000;
             display: flex;
             justify-content: center;
             align-items: center;
             opacity: 0;
             visibility: hidden;
+			overflow: hidden;
             transition: var(--transition);
         }
         
         .fullscreen-image-overlay.show {
             opacity: 1;
+			z-index: 200001 !important;
             visibility: visible;
         }
         
@@ -1807,6 +1819,23 @@
         
         /* Centrado en móviles */
         @media (max-width: 767px) {
+		    .toast {
+				right: 50% !important; /* Centrar horizontalmente */
+				left: auto !important;
+				transform: translateX(50%) translateY(100px) !important; /* Centrar y empezar desde abajo */
+				transform-origin: center !important;
+				width: 90% !important;
+				max-width: 90% !important;
+				min-width: auto !important;
+				justify-content: center !important;
+				text-align: center !important;
+				margin: 0 auto !important;
+				bottom: 20px !important; /* Un poco más arriba del borde */
+			}
+			
+			.toast.show {
+				transform: translateX(50%) translateY(0) !important; /* Centrado y en posición final */
+			}
             .footer-grid-container {
                 text-align: center;
                 grid-template-columns: 1fr;
@@ -3089,12 +3118,16 @@
                             toggleBodyScroll(true);
 							console.log("🎉 Popup de anuncio mostrado");
 							
-							// Auto-cerrar después de 30 segundos
+							// Auto-cerrar 
 							setTimeout(() => {
 								if (announcement.parentNode) {
+								
+								    closeFullscreenImage();
+								
 									closeAnnouncement();
+									
 								}
-							}, 30000);
+							}, 180000);
 						}, showImmediately ? 100 : 500);
 					} else {
 						console.log("ℹ️ No hay anuncios configurados");
@@ -3118,7 +3151,7 @@
                     if (announcement.parentNode) {
                         announcement.remove();
                     }
-                }, 300);
+                }, 500);
             }
         };
 
@@ -4212,6 +4245,14 @@
                 closeModal('adminPanelOverlay');
                 // HABILITAR SCROLL
                 toggleBodyScroll(false);
+				// Restaurar el formulario de productos
+				 $('product-form').reset();
+				 $('product-id').value = '';
+				 $('product-form-title').textContent = 'Añadir Nuevo Producto';
+				 const submitButton = $('product-form').querySelector('button[type="submit"]');
+				 if (submitButton) {
+					 submitButton.innerHTML = '<i class="fas fa-plus"></i> Guardar Producto';
+				 }
                 showToast('Sesión cerrada', 'success');
             } catch (error) {
                 console.error('Logout error:', error);
@@ -4265,7 +4306,11 @@
         window.closeFullscreenImage = function() {
             $('fullscreenImageOverlay').classList.remove('show');
             // document.body.style.overflow = '';
-            toggleBodyScroll(false);
+            toggleBodyScroll(true);
+			
+			setTimeout(() => {
+				$('fullscreenImage').src = '';
+			}, 300);
         };
         
         window.toggleMobileMenu = function() {
@@ -4296,7 +4341,7 @@
             $('mobileMenu').classList.remove('active');
             $('mobileMenuOverlay').classList.remove('active');
             $('hamburgerBtn').classList.remove('active');
-            toggleBodyScroll(True);
+            toggleBodyScroll(true);
         };
 
         // --- TOAST NOTIFICATIONS ---
@@ -4318,7 +4363,10 @@
             `;
             
             container.appendChild(toast);
-            
+			
+            // Forzar un reflow antes de mostrar para que la animación funcione
+			void toast.offsetWidth;
+			
             // Show toast
             setTimeout(() => toast.classList.add('show'), 10);
             
